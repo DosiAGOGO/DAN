@@ -1,5 +1,5 @@
 """
-create a model for fine-tune and contrast
+remove the changing learning-rate, add the acc for judge.
 -----------------------------------------
 time: 2020-3-7
 data:10w_all
