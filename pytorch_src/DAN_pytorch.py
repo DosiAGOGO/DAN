@@ -23,7 +23,7 @@ print("version 1")
 PATH = '/media/zzg/29b7a8df-b813-4851-a749-f9db6d488d0d/zzg/Documents/DAN_raw_0-1w.pth'
 # Training settings
 iteration = 500000000
-lr = 0.0001
+lr = 0.00001
 l2_decay = 5e-4
 momentum = 0.9
 no_cuda = False
@@ -120,7 +120,7 @@ def train(model):
             for i in range(len(src__)):
                 ji = src__[i]
                 yi = Y_test[i]
-                p = pow((yi - ji), 2)
+                p = abs(yi - ji)
                 k = k + p
             k = k/len(src__)
 
@@ -149,7 +149,7 @@ RESULT:
 --------------------
 epoch:
 loss:
-time:
+time:2020-3-12-10:15
 acc:
 
 """
