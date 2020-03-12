@@ -124,7 +124,7 @@ def train(model):
                 k = k + p
             k = k/len(src__)
 
-            print("acc:", k / len(src__))
+            print("acc:", k)
             print("---------------------------")
 
             torch.save({
