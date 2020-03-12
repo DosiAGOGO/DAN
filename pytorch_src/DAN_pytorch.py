@@ -20,7 +20,7 @@ import pytorch_src.DANNet_pytorch as models
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 print("version 1")
-PATH = '/media/zzg/29b7a8df-b813-4851-a749-f9db6d488d0d/zzg/Documents/DAN.pth'
+PATH = '/media/zzg/29b7a8df-b813-4851-a749-f9db6d488d0d/zzg/Documents/DAN_raw_0-1w.pth'
 # Training settings
 iteration = 500000000
 lr = 0.0001
@@ -29,7 +29,7 @@ momentum = 0.9
 no_cuda = False
 seed = 8
 
-src_path = '../dataset/raw_pkl/0_100000.pkl'
+src_path = '../dataset/raw_pkl/0_10000.pkl'
 tgt_path = '../dataset/raw_pkl/40001_50000.pkl'
 checkpoint_path = 'dataset/checkpoint'  # 模型位置
 
@@ -116,18 +116,15 @@ def train(model):
             Y_test = Y_test[:, 0]
 
             k = 0
-            k1 = 0
+
             for i in range(len(src__)):
                 ji = src__[i]
                 yi = Y_test[i]
-                if (abs(yi - ji) < 1):
-                    k += 1
-                if (abs(yi - ji) < 5):
-                    k1 += 1
-                    # break
+                p = pow((yi - ji), 2)
+                k = k + p
+            k = k/len(src__)
 
-            print("acc(<1):", k / len(src__))
-            print("acc(<5):", k1 / len(src__))
+            print("acc:", k / len(src__))
             print("---------------------------")
 
             torch.save({
@@ -152,16 +149,10 @@ if __name__ == '__main__':
 RESULT:
 --------------------
 epoch:
-loss:2000
-time:2020-3-9 14:20 - 19:20
+loss:
+time:
 acc:
 
-RESULT:
---------------------
-epoch:
-loss:2000
-time:2020-3-9 20:25
-acc:
 """
 
 
