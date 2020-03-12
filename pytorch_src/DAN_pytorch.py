@@ -133,7 +133,6 @@ def train(model):
                 'optimizer_state_dict': optimizer.state_dict(),
                 'loss': loss,
                 'acc': k,
-                'acc1': k1
             }, PATH)
 
 if __name__ == '__main__':
