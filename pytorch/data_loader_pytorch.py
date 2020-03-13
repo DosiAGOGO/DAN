@@ -33,15 +33,16 @@ def transform(f, batch_size, **kwargs):
     # 划分测试集和训练集 按8：2比例划分
     X_train, X_test, Y_train, Y_test = train_test_split(f.iloc[:, 1:7], f.iloc[:, 0], train_size=0.9)
     X_train = X_train.as_matrix()
+    X_test = X_test.as_matrix()
     Y_train = Y_train.as_matrix()
+    Y_test = Y_test.as_matrix()
 
     X_train = torch.tensor(X_train, dtype=torch.float, requires_grad=True)
+    X_test = torch.tensor(X_test, dtype=torch.float, requires_grad=True)
     Y_train = torch.tensor(Y_train, dtype=torch.float, requires_grad=True)
+    Y_test = torch.tensor(Y_test, dtype=torch.float, requires_grad=True)
 
-    X_train = torch.utils.data.DataLoader(X_train, batch_size=batch_size, shuffle=False, drop_last=True, **kwargs)
-    Y_train = torch.utils.data.DataLoader(Y_train, batch_size=batch_size, shuffle=False, drop_last=True, **kwargs)
-
-    return X_train, Y_train
+    return X_train, Y_train, X_test, Y_test
 
 
 def load_training(path, batch_size=1):

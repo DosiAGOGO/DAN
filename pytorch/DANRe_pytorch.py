@@ -76,8 +76,8 @@ def train(model):
     f_tgt = data_loader.load_training(tgt_path)
 
     # 对四组数据进行变换（src）
-    src_loader, src_label_loader = data_loader.transform(f_src, batch_size, **kwargs)
-    tgt_loader, tgt_label_loader = data_loader.transform(f_tgt, batch_size, **kwargs)
+    src_loader, src_label_loader, src_, src__ = data_loader.transform(f_src, batch_size, **kwargs)
+    tgt_loader, tgt_label_loader, tgt_, tgt__ = data_loader.transform(f_tgt, batch_size, **kwargs)
 
     src_iter = iter(src_loader)
     tgt_iter = iter(tgt_loader)
@@ -123,13 +123,29 @@ def train(model):
         lambd = 2 / (1 + math.exp(-10 * (i) / iteration)) - 1
         loss = cls_loss + lambd * mmd_loss
 
-        if i % 1000 == 0:
+        if i % 100 == 0:
             print(i, "lr: ", LEARNING_RATE)
             print("  - loss is: ", loss.data)
         loss.backward()
         optimizer.step()
 
-        if i % 1000000 == 0:
+        if i % 10000 == 0:
+
+            src_ = src_.cuda()
+            Y_test = model(src_)
+            Y_test = Y_test[:, 0]
+
+            k = 0
+
+            for i in range(len(src__)):
+                ji = src__[i]
+                yi = Y_test[i]
+                p = abs(yi - ji)
+                k = k + p
+            k = k/len(src__)
+
+            print("acc:", k)
+            print("---------------------------")
             torch.save({
                 'epoch': i,
                 'model_state_dict': model.state_dict(),
@@ -153,6 +169,6 @@ RESULT:
 --------------------
 epoch:
 loss:
-time:2020-3-8 10:30
+time:
 acc:
 """

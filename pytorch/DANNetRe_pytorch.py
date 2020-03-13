@@ -58,6 +58,6 @@ def DAN(pretrained=False, **kwargs):
     model = DANmain()
     if pretrained:
         print("pretrained！")
-        model.load_state_dict(torch.load("xxx.pth"), strict=False)
+        model.load_state_dict(torch.load("/media/zzg/29b7a8df-b813-4851-a749-f9db6d488d0d/zzg/Documents/DAN_raw_0-1w.pth"), strict=False)
 
     return model
