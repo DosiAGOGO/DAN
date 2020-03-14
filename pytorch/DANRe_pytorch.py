@@ -26,7 +26,7 @@ l2_decay = 5e-4
 momentum = 0.9
 no_cuda = False
 seed = 8
-batch_size = 2000
+batch_size = 32
 
 src_path = '../dataset/raw_pkl/30001_40000.pkl'
 tgt_path = '../dataset/raw_pkl/40001_50000.pkl'
@@ -76,13 +76,9 @@ def train(model):
     f_tgt = data_loader.load_training(tgt_path)
 
     # 对四组数据进行变换（src）
-    src_loader, src_label_loader, src_, src__ = data_loader.transform(f_src, batch_size, **kwargs)
-    tgt_loader, tgt_label_loader, tgt_, tgt__ = data_loader.transform(f_tgt, batch_size, **kwargs)
+    src_data, src_label, src_, src__ = data_loader.transform(f_src, batch_size, **kwargs)
+    tgt_data, tgt_label, tgt_, tgt__ = data_loader.transform(f_tgt, batch_size, **kwargs)
 
-    src_iter = iter(src_loader)
-    tgt_iter = iter(tgt_loader)
-    src_label_iter = iter(src_label_loader)
-    tgt_label_iter = iter(tgt_label_loader)
 
     correct = 0
     for i in range(1, iteration + 1):
@@ -93,22 +89,7 @@ def train(model):
         #    print('learning rate{: .4f}'.format(LEARNING_RATE))
         optimizer = torch.optim.SGD(model.parameters(), lr=LEARNING_RATE / 10)
 
-        try:
-            src_data = src_iter.next()
-            src_label = src_label_iter.next()
-        except Exception as err:
-            src_iter = iter(src_loader)
-            src_label_iter = iter(src_label_loader)
-            src_data = src_iter.next()
-            src_label = src_label_iter.next()
-        try:
-            tgt_data = tgt_iter.next()
-            tgt_label = tgt_label_iter.next()
-        except Exception as err:
-            tgt_iter = iter(tgt_loader)
-            tgt_label_iter = iter(tgt_label_loader)
-            tgt_data = tgt_iter.next()
-            tgt_label = tgt_label_iter.next()
+
 
         if cuda:
             src_data, src_label = src_data.cuda(), src_label.cuda()
