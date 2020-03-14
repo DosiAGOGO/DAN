@@ -76,9 +76,14 @@ def train(model):
     f_tgt = data_loader.load_training(tgt_path)
 
     # 对四组数据进行变换（src）
-    src_data, src_label, src_, src__ = data_loader.transform(f_src, batch_size, **kwargs)
-    tgt_data, tgt_label, tgt_, tgt__ = data_loader.transform(f_tgt, batch_size, **kwargs)
+    src_loader, src_label_loader, src_, src__ = data_loader.transform(f_src, batch_size, **kwargs)
+    tgt_loader, tgt_label_loader, tgt_, tgt__ = data_loader.transform(f_tgt, batch_size, **kwargs)
 
+
+    src_iter = iter(src_loader)
+    tgt_iter = iter(tgt_loader)
+    src_label_iter = iter(src_label_loader)
+    tgt_label_iter = iter(tgt_label_loader)
 
     correct = 0
     for i in range(1, iteration + 1):
@@ -89,6 +94,23 @@ def train(model):
         #    print('learning rate{: .4f}'.format(LEARNING_RATE))
         optimizer = torch.optim.SGD(model.parameters(), lr=LEARNING_RATE / 10)
 
+        try:
+            src_data = next(src_iter)
+            src_label = next(src_label_iter)
+        except Exception as err:
+            src_iter = iter(src_loader)
+            src_label_iter = iter(src_label_loader)
+            src_data = next(src_iter)
+            src_label = next(src_label_iter)
+
+        try:
+            tgt_data = next(tgt_iter)
+            tgt_label = next(tgt_label_iter)
+        except Exception as err:
+            tgt_iter = iter(tgt_loader)
+            tgt_label_iter = iter(tgt_label_loader)
+            tgt_data = next(tgt_iter)
+            tgt_label = next(tgt_label_iter)
 
 
         if cuda:
@@ -96,7 +118,7 @@ def train(model):
             tgt_data = tgt_data.cuda()
 
         optimizer.zero_grad()
-        src_pred, mmd_loss = model(src_data, tgt_data)
+        src_pred, mmd_loss = model(src_data, tgt_data, True)
         src_pred2 = src_pred[:, 0]
         # src_label = src_label.float()
         # cls_loss = F.mse_loss(src_pred[:, 0], src_label)
@@ -104,16 +126,16 @@ def train(model):
         lambd = 2 / (1 + math.exp(-10 * (i) / iteration)) - 1
         loss = cls_loss + lambd * mmd_loss
 
-        if i % 100 == 0:
+        if i % 10 == 0:
             print(i, "lr: ", LEARNING_RATE)
             print("  - loss is: ", loss.data)
         loss.backward()
         optimizer.step()
 
-        if i % 10000 == 0:
+        if i % 500 == 0:
 
             src_ = src_.cuda()
-            Y_test = model(src_)
+            Y_test, _ = model(src_, tgt_data, False)
             Y_test = Y_test[:, 0]
 
             k = 0
